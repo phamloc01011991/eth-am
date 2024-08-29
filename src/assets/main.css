@@ -1,0 +1,45 @@
+@import './base.css';
+
+#app {
+  max-width: 1280px;
+  padding: 45px 15px 85px 15px;
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+  transition: 0.4s;
+  padding: 3px;
+}
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+li {
+  list-style: none;
+}
+w3m-modal.open {
+  position: fixed;
+  z-index: 9999999999;
+}
+
+
+
+
+
+/* @media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+  }
+
+  #app {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 0 2rem;
+  }
+} */
