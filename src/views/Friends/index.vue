@@ -147,9 +147,9 @@ onMounted(async () => {
       </div>
     </div>
     <div class="invite-center">
-      <button class="btn1" @click="copyClipboard('https://eth-am.net/' + userInfo.referralCode)">{{
+      <button class="btn1" @click="copyClipboard('https://eth-am.info/' + userInfo.referralCode)">{{
         languagePack.friend_index_btn }} <i class='bx bx-user-plus'></i></button>
-      <button class="btn2" @click="copyClipboard('https://eth-am.net/' + userInfo.referralCode)"><i
+      <button class="btn2" @click="copyClipboard('https://eth-am.info/' + userInfo.referralCode)"><i
           class='bx bx-copy'></i></button>
     </div>
     <HandleNoti v-if="isCopyToClipBoardSucces" :noti="copySuccess" />
@@ -319,4 +319,5 @@ onMounted(async () => {
 
 .list-friends .list .item .right span {
   font-size: 14px;
-}</style>
+}
+</style>

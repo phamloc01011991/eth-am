@@ -29,7 +29,7 @@ function getCurrentURL() {
   var parts = href.split("/");
   if (parts[parts.length - 1]) {
     invitedCode.value = parts[parts.length - 1]
-    if(invitedCode.value != 'home' && invitedCode.value != 'market' && invitedCode.value != 'swaps' && invitedCode.value != 'friends' && invitedCode.value != 'history') {
+    if (invitedCode.value != 'home' && invitedCode.value != 'market' && invitedCode.value != 'swaps' && invitedCode.value != 'friends' && invitedCode.value != 'history') {
       invitedCodeOK.value = invitedCode.value
     }
   }
@@ -40,7 +40,7 @@ const projectId = '6d1e12cf26f9c187a8699c5e6763319a';
 const metadata = {
   name: 'ETH AM',
   description: 'ETH AM',
-  url: 'https://eth-am.net',
+  url: 'https://eth-am.info',
   icons: ['./assets/logo.svg']
 }
 
@@ -52,9 +52,9 @@ const config = defaultWagmiConfig({
 })
 
 reconnect(config)
-.then((val)=> {
-  localStorage.setItem('user', val[0].accounts[0]);
-});
+  .then((val) => {
+    localStorage.setItem('user', val[0].accounts[0]);
+  });
 
 createWeb3Modal({
   wagmiConfig: config,
@@ -106,12 +106,12 @@ onUnmounted(() => {
       </div>
       <div class="right">
         <w3m-button balance="false" />
-        <i class="bx bx-world"  @click="showLang()"></i>
+        <i class="bx bx-world" @click="showLang()"></i>
       </div>
     </div>
     <RouterView />
     <Footer />
-    <PopLang v-if="showPopLang == true" @close-popup="showPopLang = false"/>
+    <PopLang v-if="showPopLang == true" @close-popup="showPopLang = false" />
   </div>
 </template>
 
@@ -132,10 +132,12 @@ onUnmounted(() => {
   margin-left: 10px;
   font-size: 20px;
 }
+
 .right {
   display: flex;
   align-items: center;
 }
+
 .right i {
   font-size: 23px;
   margin-left: 10px;
