@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import {languagePack} from '../../languages'
+import { languagePack } from '../../languages'
 import { formatNumber2, formatNumber4, formatNumber6 } from '../../utils/formatCoin.js'
 import HandleNoti from '../../components/HandleNoti.vue'
 const isCopyToClipBoardSucces = ref(false)
@@ -16,7 +16,7 @@ async function getAdminConfig() {
   var res = await request.get('user/config/get_config');
   adminConfig.value = res.data.data;
 }
-
+// ok
 async function loadCheck() {
 
   let user = localStorage.getItem('user')
@@ -46,14 +46,14 @@ async function getListFriends() {
       address: user
     }
   })
-  .then((res)=> {
-    listFriends.value = res.data.data;
-    console.log(listFriends.value);
-  })
-  .catch((err)=> {
-    console.log(err);
-  })
-  
+    .then((res) => {
+      listFriends.value = res.data.data;
+      console.log(listFriends.value);
+    })
+    .catch((err) => {
+      console.log(err);
+    })
+
 }
 
 function formatToken(token) {
@@ -62,16 +62,16 @@ function formatToken(token) {
   const formattedToken = `${start}...${end}`;
   return formattedToken;
 }
- 
+
 async function reloadListFriends() {
   document.getElementsByClassName('reload')[0].style.color = '#a0a0a2';
   getListFriends()
-  .then(()=>{
-    document.getElementsByClassName('reload')[0].style.color = '#fff';
-  })
-  .catch((err) => {
-    console.log(err);
-  })
+    .then(() => {
+      document.getElementsByClassName('reload')[0].style.color = '#fff';
+    })
+    .catch((err) => {
+      console.log(err);
+    })
 }
 
 function copyClipboard(textToCopy) {
@@ -111,7 +111,8 @@ onMounted(async () => {
           <h4>{{ languagePack.friend_index_title1 }}</h4>
           <div>
             <img src="../../assets/usdt.png" alt="" width="25">
-            <span><strong>+{{ adminConfig ? formatNumber2(adminConfig.invited_reward) : 0 }} USDT</strong> {{ languagePack.friend_index_intro }}</span>
+            <span><strong>+{{ adminConfig ? formatNumber2(adminConfig.invited_reward) : 0 }} USDT</strong> {{
+              languagePack.friend_index_intro }}</span>
           </div>
         </div>
       </div>
@@ -146,10 +147,12 @@ onMounted(async () => {
       </div>
     </div>
     <div class="invite-center">
-      <button class="btn1" @click="copyClipboard('https://eth-am.net/'+userInfo.referralCode)">{{ languagePack.friend_index_btn }} <i class='bx bx-user-plus'></i></button>
-      <button class="btn2" @click="copyClipboard('https://eth-am.net/'+userInfo.referralCode)"><i class='bx bx-copy'></i></button>
+      <button class="btn1" @click="copyClipboard('https://eth-am.net/' + userInfo.referralCode)">{{
+        languagePack.friend_index_btn }} <i class='bx bx-user-plus'></i></button>
+      <button class="btn2" @click="copyClipboard('https://eth-am.net/' + userInfo.referralCode)"><i
+          class='bx bx-copy'></i></button>
     </div>
-    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="copySuccess"/>
+    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="copySuccess" />
   </div>
 </template>
 
@@ -316,5 +319,4 @@ onMounted(async () => {
 
 .list-friends .list .item .right span {
   font-size: 14px;
-}
-</style>
+}</style>

@@ -3,7 +3,7 @@ import { languagePack } from '../languages'
 import { formatNumber2, formatNumber4, formatNumber6, formatNumber10 } from '../utils/formatCoin.js';
 import {ref} from 'vue'
 import HandleNoti from './HandleNoti.vue'
-const showErrNoti = ref(false)
+
 import request from '../utils/request.js'
 const emit = defineEmits(['close-popup', 'resetSwaps'])
 const props = defineProps({
@@ -12,6 +12,7 @@ const props = defineProps({
     eth: Number,
     address: String
 })
+const showErrNoti = ref(false)
 const errNoti = {
   text: '',
   status: ''
