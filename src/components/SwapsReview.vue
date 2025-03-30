@@ -1,29 +1,31 @@
 <script setup>
 import { languagePack } from '../languages'
 import { formatNumber2, formatNumber4, formatNumber6, formatNumber10 } from '../utils/formatCoin.js';
-import {ref} from 'vue'
+import { ref } from 'vue'
 import HandleNoti from './HandleNoti.vue'
 
 import request from '../utils/request.js'
 const emit = defineEmits(['close-popup', 'resetSwaps'])
 const props = defineProps({
-    balanceConvert: Number,
-    ETHConvert: Boolean,
-    eth: Number,
+    fromCrypto: String,
+    toCrypto: String,
+    amount: Number,
+    receiveAmount: Number,
+    exchangeRates: Object,
     address: String
 })
 const showErrNoti = ref(false)
 const errNoti = {
-  text: '',
-  status: ''
+    text: '',
+    status: ''
 }
 
 
 const closePopup = () => {
-  emit('close-popup')
+    emit('close-popup')
 }
 const resetSwaps = () => {
-  emit('resetSwaps')
+    emit('resetSwaps')
 }
 
 async function convertCoin() {
@@ -31,29 +33,30 @@ async function convertCoin() {
     document.getElementsByClassName('swap')[0].textContent = languagePack.swap_review_swaping;
     await request.put('crypto-convert', {
         address: props.address,
-        convertTo: props.ETHConvert ? 'usdt' : 'eth',
-        amount: props.balanceConvert
+        convertFrom: props.fromCrypto.toLowerCase(),
+        convertTo: props.toCrypto.toLowerCase(),
+        amount: props.amount
     })
-    .then((res) => {
-        errNoti.text = languagePack.swap_review_err1
-        errNoti.status = 'success'
-        showErrNoti.value = true
-        setTimeout(() => {
-            showErrNoti.value = false
-            resetSwaps();
-            closePopup()
-        }, 1500);
-        
-    })
-    .catch((err)=> {
-        errNoti.text = languagePack.swap_review_err2
-        errNoti.status = 'error'
-        showErrNoti.value = true
-        setTimeout(() => {
-            showErrNoti.value = false
-        }, 3000);
-    })
-    
+        .then((res) => {
+            errNoti.text = languagePack.swap_review_err1
+            errNoti.status = 'success'
+            showErrNoti.value = true
+            setTimeout(() => {
+                showErrNoti.value = false
+                resetSwaps();
+                closePopup()
+            }, 1500);
+
+        })
+        .catch((err) => {
+            errNoti.text = languagePack.swap_review_err2
+            errNoti.status = 'error'
+            showErrNoti.value = true
+            setTimeout(() => {
+                showErrNoti.value = false
+            }, 3000);
+        })
+
 }
 
 
@@ -67,27 +70,28 @@ async function convertCoin() {
                 <div class="item">
                     <div class="left">{{ languagePack.swap_review_title2 }}</div>
                     <div class="right text-highlight">Ref Finance</div>
+
                 </div>
                 <div class="item">
                     <div class="left">{{ languagePack.swap_review_title3 }}</div>
-                    <div class="right text-highlight">{{ balanceConvert }} {{ ETHConvert ? 'ETH' : 'USDT' }}</div>
+                    <div class="right text-highlight">{{ amount }} {{ fromCrypto }}</div>
                 </div>
                 <div class="item">
                     <div class="left">{{ languagePack.swap_review_title4 }}</div>
-                    <div class="right text-highlight">{{ eth ? ETHConvert ? formatNumber2(balanceConvert * parseFloat(eth.current_price)) + ' USDT' : formatNumber10(balanceConvert / parseFloat(eth.current_price)) + ' ETH' : 0 }}</div>
+                    <div class="right text-highlight">{{ receiveAmount }} {{ toCrypto }}</div>
                 </div>
                 <div class="item">
                     <div class="left">{{ languagePack.swap_review_title5 }}</div>
-                    <div class="right text-highlight" v-if="ETHConvert">
-                        1 ETH = {{ eth ? (formatNumber2(parseFloat(eth.current_price))) : 0 }} USDT
+                    <div class="right text-highlight">
+                        1 {{ fromCrypto }} = {{ exchangeRates ? exchangeRates[fromCrypto][toCrypto] : 0
+                        }} {{ toCrypto }}
                     </div>
-                    <div class="right text-highlight" v-if="!ETHConvert">
-                        1 USDT = {{ eth ? (formatNumber10(1 / parseFloat(eth.current_price))) : 0 }} ETH
-                    </div>
+
+
                 </div>
                 <div class="item">
                     <div class="left">{{ languagePack.swap_review_title6 }}</div>
-                    <div class="right text-highlight">0 ~ 2%</div>
+                    <div class="right text-highlight">0 ~ 0.5%</div>
                 </div>
             </div>
             <div class="btn-center">
@@ -95,7 +99,7 @@ async function convertCoin() {
                 <button class="back" @click="closePopup">{{ languagePack.swap_review_btn2 }}</button>
             </div>
         </div>
-        <HandleNoti v-if="showErrNoti" :noti="errNoti"/>
+        <HandleNoti v-if="showErrNoti" :noti="errNoti" />
     </div>
 </template>
 

@@ -1,6 +1,6 @@
 <script setup>
-import {languagePack} from '../../languages'
-import { formatNumber2, formatNumber4, formatNumber6 } from '../../utils/formatCoin.js'
+import { languagePack } from '../../languages'
+import { formatNumber2, formatNumber4, formatNumber6, formatNumber8, formatNumber10 } from '../../utils/formatCoin.js'
 import { onMounted, ref } from 'vue'
 import request from '../../utils/request.js'
 import HelpAccordion from '../../components/HelpAccordion.vue';
@@ -21,18 +21,19 @@ const eth = ref();
 const isShowWithdraw = ref(false);
 const isShowDepoint = ref(false);
 const usdt = ref();
+const vndc = ref()
 const configInterest = ref();
 const transactions = ref()
 const caculateMining = ref(0)
 const seeAllTransaction = ref(false)
 const isDisplayHomeClassification = ref(false);
 const questions = [
-{
+  {
     id: 1,
     title: languagePack.home_index_question1,
     info: languagePack.home_index_info1,
   },
-  
+
   {
     id: 2,
     title: languagePack.home_index_question2,
@@ -48,7 +49,7 @@ const questions = [
     title: languagePack.home_index_question4,
     info: languagePack.home_index_info4,
   },
-  
+
 ];
 
 function changeDate(inputDateTime = "") {
@@ -144,6 +145,11 @@ async function getUsdtInfo() {
   var res = await request.get('crypto/tether');
   usdt.value = res.data.data;
 }
+async function getVndcInfo() {
+  var res = await request.get('crypto/vndc');
+  vndc.value = res.data.data;
+}
+
 
 async function startMining() {
   request.post('/mining/start', {
@@ -202,6 +208,7 @@ onMounted(async () => {
   await loadCheck();
   await getEthInfo();
   await getUsdtInfo();
+  await getVndcInfo();
   await getAdminConfig();
   await getConfigInterest();
   await caculatePercent()
@@ -219,7 +226,7 @@ onMounted(async () => {
             <span class="title">{{ languagePack.home_index_title1 }}</span>
             <div class="balance">
               <div class="c">${{ userInfo && eth ? formatNumber2(parseFloat(userInfo.balance_usdt) +
-      parseFloat(userInfo.balance_eth) * parseFloat(eth.current_price)) : 0 }}</div>
+                parseFloat(userInfo.balance_eth) * parseFloat(eth.current_price)) : 0 }}</div>
               <div class="ic">
                 <i class='bx bx-show'></i>
               </div>
@@ -232,29 +239,34 @@ onMounted(async () => {
           <div class="history">
             <div class="top">
               <span class="title">{{ languagePack.home_index_title4 }}</span>
-              <span v-if="!seeAllTransaction" @click="getTransactions()" class="see-all">{{ languagePack.home_index_title2 }} <i class='bx bx-chevron-right'></i></span>
-              <span v-if="seeAllTransaction" @click="getOneTransactions()" class="see-all">{{ languagePack.home_index_title3 }} <i class='bx bx-chevron-left bx-rotate-270' ></i></span>
+              <span v-if="!seeAllTransaction" @click="getTransactions()" class="see-all">{{ languagePack.home_index_title2
+              }} <i class='bx bx-chevron-right'></i></span>
+              <span v-if="seeAllTransaction" @click="getOneTransactions()" class="see-all">{{
+                languagePack.home_index_title3 }} <i class='bx bx-chevron-left bx-rotate-270'></i></span>
             </div>
             <div class="list-transactions">
               <div class="item" v-for="item in transactions" :key="item.id">
                 <div class="left">
                   <div class="icon">
-                    <i :class='item.typeTransaction == "transfer" ? "bx bx-transfer-alt" : (item.typeTransaction == "toup" ? "bx bx-left-arrow-alt" : (item.typeTransaction == "withdrawal" ? "bx bx-right-arrow-alt" : "bx bx-coin"))'></i>
+                    <i
+                      :class='item.typeTransaction == "transfer" ? "bx bx-transfer-alt" : (item.typeTransaction == "toup" ? "bx bx-left-arrow-alt" : (item.typeTransaction == "withdrawal" ? "bx bx-right-arrow-alt" : "bx bx-coin"))'></i>
                   </div>
                   <div class="ct">
                     <div class="t">
-                      {{ item.typeTransaction == 'transfer' ? (item.source == 'usdt' ? 'USDT to ETH' : 'ETH to USDT') :
-      (item.typeTransaction == 'toup' ? 'Buy' : (item.typeTransaction == 'withdrawal' ? 'Transfer' :
-        'Auto claim')) }}
+                      {{ item.typeTransaction == 'transfer' ? `${item.source.toUpperCase()} to
+                                            ${item.target.toUpperCase()}` :
+                        (item.typeTransaction == 'toup' ? 'Buy' : (item.typeTransaction == 'withdrawal' ? 'Transfer' :
+                          'Auto claim')) }}
                     </div>
                     <div class="b">
                       {{ changeDate(item.createdAt) }}
                     </div>
                   </div>
                 </div>
-                <div class="right"> 
+                <div class="right">
                   <div class="t">
-                     {{ item.typeTransaction == 'transfer' && item.source == 'usdt' || item.typeTransaction == 'mining' ? formatNumber6(item.amount) + ' ETH' : formatNumber2(item.amount) + ' USDT'}}
+                    {{ item.typeTransaction == 'transfer' && item.source == 'usdt' || item.typeTransaction == 'mining' ?
+                      formatNumber6(item.amount) + ' ETH' : formatNumber2(item.amount) + ' USDT' }}
                   </div>
                   <div class="b">
                     {{ item.status == 'approved' ? 'Success' : item.status }}
@@ -279,11 +291,14 @@ onMounted(async () => {
             <img src="../../assets/propeller.png" width="60" alt="" :class="userInfo?.isMining ? 'roting' : ''">
             <div class="bot">
               <button @click="startMining" v-if="userInfo?.isMining == false">{{ languagePack.home_index_btn3 }}</button>
-              <div class="am">≈ {{ caculateMining&&adminConfig ? formatNumber6(caculateMining/adminConfig.hour_mining) : 0 }} ETH/{{ languagePack.home_index_title7 }}</div>
+              <div class="am">≈ {{ caculateMining && adminConfig ? formatNumber6(caculateMining / adminConfig.hour_mining)
+                : 0
+              }} ETH/{{ languagePack.home_index_title7 }}</div>
             </div>
           </div>
         </div>
-        <button class="classification" @click="isDisplayHomeClassification = true">{{ languagePack.home_index_title8 }}</button>
+        <button class="classification" @click="isDisplayHomeClassification = true">{{ languagePack.home_index_title8
+        }}</button>
         <HomeClassification v-if="isDisplayHomeClassification" :configInterest="configInterest"
           @close-popup="isDisplayHomeClassification = false" :hour_mining="adminConfig.hour_mining" />
         <div class="tokens">
@@ -296,40 +311,61 @@ onMounted(async () => {
               <div class="left">
                 <div class="logo">
                   <img src="../../assets/eth.png" height="35" alt="">
-                  <img class="nw" src="../../assets/eth.png" height="20" alt="">
                 </div>
                 <div class="dt">
                   <div class="name">ETH</div>
                   <div class="price">{{ userInfo ? formatNumber4(userInfo.balance_eth) : 0 }} • ${{ eth ?
-      formatNumber2(eth.current_price) : 0 }}</div>
+                    formatNumber2(eth.current_price) : 0 }}</div>
                 </div>
               </div>
               <div class="right">
                 <div class="bl-cc">${{ userInfo && eth ? formatNumber2(parseFloat(userInfo.balance_eth) *
-      parseFloat(eth.current_price)) : 0 }}</div>
+                  parseFloat(eth.current_price)) : 0 }}</div>
                 <div class="bl-usdt"
                   :class="eth ? (parseFloat(eth.price_change_24h) > 0 ? 'up' : (parseFloat(eth.price_change_24h) < 0) ? 'down' : '') : ''">
                   ${{ eth ? formatNumber2(eth.price_change_24h) : 0 }} • {{ eth ?
-      formatNumber2(eth.price_change_percentage_24h) : 0 }}% </div>
+                    formatNumber2(eth.price_change_percentage_24h) : 0 }}% </div>
               </div>
             </div>
             <div class="token usdt">
               <div class="left">
                 <div class="logo">
                   <img src="../../assets/usdt.png" height="30" alt="">
-                  <img class="nw" src="../../assets/eth.png" height="20" alt="">
                 </div>
                 <div class="dt">
                   <div class="name">USDT</div>
-                  <div class="price">{{ userInfo ? formatNumber4(userInfo.balance_usdt) : 0 }} • $1.00</div>
+                  <div class="price">{{ userInfo ? formatNumber4(userInfo.balance_usdt) : 0 }} • ${{ usdt ?
+                    formatNumber4(usdt.current_price) : 0 }}</div>
                 </div>
               </div>
               <div class="right">
-                <div class="bl-cc">${{ userInfo ? formatNumber2(userInfo.balance_usdt) : 0 }}</div>
+                <div class="bl-cc">${{ userInfo && eth ? formatNumber2(parseFloat(userInfo.balance_usdt) *
+                  parseFloat(usdt.current_price)) : 0 }}</div>
                 <div class="bl-usdt"
                   :class="usdt ? (parseFloat(usdt.price_change_24h) > 0 ? 'up' : (parseFloat(usdt.price_change_24h) < 0) ? 'down' : '') : ''">
                   ${{ usdt ? formatNumber2(usdt.price_change_24h) : 0 }} • {{ usdt ?
-      formatNumber2(usdt.price_change_percentage_24h) : 0 }}% </div>
+                    formatNumber2(usdt.price_change_percentage_24h) : 0 }}% </div>
+              </div>
+            </div>
+            <div class="token vndc">
+              <div class="left">
+                <div class="logo">
+                  <img src="../../assets/vndc.png" height="30" alt="">
+                </div>
+                <div class="dt">
+                  <div class="name">VNDC</div>
+                  <div class="price">{{ userInfo ? formatNumber2(userInfo.balance_vndc) : 0 }} • ${{ vndc ?
+                    formatNumber8(vndc.current_price) : 0 }}</div>
+
+                </div>
+              </div>
+              <div class="right">
+                <div class="bl-cc">${{ userInfo ? formatNumber2(parseFloat(userInfo.balance_vndc) *
+                  parseFloat(vndc.current_price)) : 0 }}</div>
+                <div class="bl-usdt"
+                  :class="vndc ? (parseFloat(vndc.price_change_24h) > 0 ? 'up' : (parseFloat(vndc.price_change_24h) < 0) ? 'down' : '') : ''">
+                  ${{ vndc ? formatNumber8(vndc.price_change_24h) : 0 }} • {{ vndc ?
+                    formatNumber2(vndc.price_change_percentage_24h) : 0 }}% </div>
               </div>
             </div>
           </div>
@@ -477,10 +513,11 @@ onMounted(async () => {
         <HelpAccordion :questions="questions" />
       </div>
     </div>
-    <Withdraw v-if="isShowWithdraw" @close-popup="isShowWithdraw = false" :userInfo="userInfo"
-      @loadcheck="loadCheck()" @loadtrans="getOneTransactions()"/>
-    <Depoint v-if="isShowDepoint" @close-popup="isShowDepoint = false" :userInfo="userInfo" @loadtrans="getOneTransactions()" />
-    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="copySuccess"/>
+    <Withdraw v-if="isShowWithdraw" @close-popup="isShowWithdraw = false" :userInfo="userInfo" @loadcheck="loadCheck()"
+      @loadtrans="getOneTransactions()" />
+    <Depoint v-if="isShowDepoint" @close-popup="isShowDepoint = false" :userInfo="userInfo"
+      @loadtrans="getOneTransactions()" />
+    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="copySuccess" />
   </div>
 </template>
 
@@ -654,18 +691,22 @@ h2 {
 .history {
   margin-top: 15px;
 }
+
 .history>.top {
   margin-bottom: 10px;
 }
+
 .history .item {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
 }
+
 .history .item .left {
   display: flex;
   align-items: center
 }
+
 .history .item .left .icon {
   margin-right: 10px;
   background: #32353b;
@@ -674,17 +715,21 @@ h2 {
   text-align: center;
   border-radius: 5px;
 }
+
 .history .item .left .icon i {
   font-size: 21px;
   line-height: 30px;
 }
+
 .history .item .left .ct .b {
   color: #a0a0a2;
   font-size: 13px;
 }
+
 .history .item .right {
   text-align: right;
 }
+
 .history .item .right .b {
   color: #a0a0a2;
   font-size: 13px;

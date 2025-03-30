@@ -21,7 +21,13 @@ export function formatNumber6(num) {
     parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     return parts.join('.');
 }
-
+export function formatNumber8(num) {
+    let flooredNum = Math.floor(num * 100000000) / 100000000
+    let flooredNumStr = flooredNum.toFixed(8);
+    let parts = flooredNumStr.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return parts.join('.');
+}
 export function formatNumber10(num) {
     let flooredNum = Math.floor(num * 10000000000) / 10000000000;
     let flooredNumStr = flooredNum.toFixed(10);
