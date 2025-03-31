@@ -170,7 +170,7 @@ async function startMining() {
 async function caculatePercent() {
   let userLevel = false;
   for (let element of configInterest.value.reverse()) {
-    if (parseFloat(userInfo?.value.balance_usdt) > parseFloat(element.valueMin)) {
+    if (parseFloat(userInfo?.value.balance_usdt) >= parseFloat(element.valueMin)) {
       userLevel = element;
       break;
     }
@@ -267,6 +267,9 @@ onMounted(async () => {
                   <div class="t">
                     {{ item.typeTransaction == 'transfer' && item.source == 'usdt' || item.typeTransaction == 'mining' ?
                       formatNumber6(item.amount) + ' ETH' : formatNumber2(item.amount) + ' USDT' }}
+
+                    <!-- {{ item.typeTransaction == 'transfer' || item.typeTransaction == 'mining' ? 'a' :
+                      formatNumber2(item.amount) + ' USDT' }} -->
                   </div>
                   <div class="b">
                     {{ item.status == 'approved' ? 'Success' : item.status }}
@@ -355,7 +358,7 @@ onMounted(async () => {
                 <div class="dt">
                   <div class="name">VNDC</div>
                   <div class="price">{{ userInfo ? formatNumber2(userInfo.balance_vndc) : 0 }} • ${{ vndc ?
-                    formatNumber8(vndc.current_price) : 0 }}</div>
+                    formatNumber6(vndc.current_price) : 0 }}</div>
 
                 </div>
               </div>
@@ -785,7 +788,7 @@ h2 {
 
 .token {
   background: #282b30;
-  padding: 12px;
+  padding: 12px 10px;
   margin-top: 15px;
   border-radius: 15px;
   display: flex;
@@ -799,7 +802,7 @@ h2 {
 }
 
 .token .left .logo {
-  margin-right: 15px;
+  margin-right: 10px;
   min-width: 35px;
   text-align: center;
   position: relative;
