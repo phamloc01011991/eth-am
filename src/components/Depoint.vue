@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { languagePack } from '../languages'
+import { formatNumber2, formatNumber4, formatNumber6, formatNumber8, formatNumber10 } from '@/utils/formatCoin.js'
 import request from '../utils/request';
 import HandleNoti from './HandleNoti.vue'
 const isCopyToClipBoardSucces = ref(false)
@@ -22,6 +23,7 @@ const loadtrans = () => {
 };
 const props = defineProps({
   userInfo: Object,
+  vndc: Object
 });
 
 async function getConfig() {
@@ -68,13 +70,13 @@ function copyClipboard(textToCopy) {
     errNoti.text = languagePack.depoint_err2;
     errNoti.status = 'error'
     isCopyToClipBoardSucces.value = true
-      setTimeout(() => {
-        isCopyToClipBoardSucces.value = false
-      }, 3000);
+    setTimeout(() => {
+      isCopyToClipBoardSucces.value = false
+    }, 3000);
   } else {
     // Sao chép nội dung vào bộ nhớ đệm
     navigator.clipboard.writeText(textToCopy).then(function () {
-     
+
       errNoti.text = languagePack.depoint_err3
       errNoti.status = 'success'
       isCopyToClipBoardSucces.value = true
@@ -104,11 +106,7 @@ onMounted(async () => {
     <div class="wrapper">
       <div class="top">
         <div class="back">
-          <i
-            class="bx bx-chevron-left"
-            style="font-size: 30px"
-            @click="closePopup"
-          ></i>
+          <i class="bx bx-chevron-left" style="font-size: 30px" @click="closePopup"></i>
         </div>
         <div class="center">
           <h4>{{ languagePack.depoint_title }}</h4>
@@ -120,19 +118,15 @@ onMounted(async () => {
 
       <div class="center-depoint">
         <div class="note">{{ languagePack.depoint_title1 }}</div>
-        <input type="number" v-model="amount" class="input_amount" />
-        <div class="note">{{ languagePack.depoint_note }}</div>
-        <div class="qr_code" id="id_qrcode"></div>
-        <div class="address">
-          <span class="title">{{ languagePack.depoint_wallet_adress }}</span>
-          <p class="ad">
-            {{ config?.address_admin }}
-            <i
-              style="font-size: 17px; margin-left: 3px"
-              class="bx bx-copy bx-rotate-270"
-              @click="copyClipboard(config?.address_admin)"
-            ></i>
-          </p>
+        <!-- <input type="number" v-model="amount" class="input_amount" /> -->
+        <div class="center-time">
+          <div class="form-input">
+            <div class="form-control">
+              <input placeholder="VND" type="number" v-model="amount" />
+            </div>
+          </div>
+          <p class="sub"><span>Nhận ≈</span>{{ formatNumber2(amount / (1 / vndc?.current_price)) }}
+            USD</p>
         </div>
         <button class="btnbuy" @click="depoint">{{ languagePack.depoint_btn }}</button>
       </div>
@@ -162,7 +156,7 @@ onMounted(async () => {
         </div>
       </div>
     </div>
-    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="errNoti"/>
+    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="errNoti" />
   </div>
 </template>
 
@@ -329,5 +323,27 @@ onMounted(async () => {
   left: 15px;
   transform: translateY(-50%);
   max-width: 1250px;
+}
+
+input {
+  background: none;
+  border: none;
+  outline: none;
+  font-size: 45px;
+  font-weight: 800;
+  color: var(--text-color);
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  max-width: 100%;
+}
+
+.form-control span {
+  display: inline-block;
+  position: absolute;
+  bottom: 0;
+  left: 100%;
+  font-weight: 600;
+  font-size: 13px;
 }
 </style>

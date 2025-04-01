@@ -226,7 +226,8 @@ onMounted(async () => {
             <span class="title">{{ languagePack.home_index_title1 }}</span>
             <div class="balance">
               <div class="c">${{ userInfo && eth ? formatNumber2(parseFloat(userInfo.balance_usdt) +
-                parseFloat(userInfo.balance_eth) * parseFloat(eth.current_price)) : 0 }}</div>
+                parseFloat(userInfo.balance_eth) * parseFloat(eth.current_price) +
+                (parseFloat(userInfo.balance_vndc) / (1 / parseFloat(vndc.current_price)))) : 0 }}</div>
               <div class="ic">
                 <i class='bx bx-show'></i>
               </div>
@@ -255,7 +256,7 @@ onMounted(async () => {
                     <div class="t">
                       {{ item.typeTransaction == 'transfer' ? `${item.source.toUpperCase()} to
                                             ${item.target.toUpperCase()}` :
-                        (item.typeTransaction == 'toup' ? 'Buy' : (item.typeTransaction == 'withdrawal' ? 'Transfer' :
+                        (item.typeTransaction == 'toup' ? 'Nạp' : (item.typeTransaction == 'withdrawal' ? 'Rút' :
                           'Auto claim')) }}
                     </div>
                     <div class="b">
@@ -265,8 +266,7 @@ onMounted(async () => {
                 </div>
                 <div class="right">
                   <div class="t">
-                    {{ item.typeTransaction == 'transfer' && item.source == 'usdt' || item.typeTransaction == 'mining' ?
-                      formatNumber6(item.amount) + ' ETH' : formatNumber2(item.amount) + ' USDT' }}
+                    {{ formatNumber6(item.amount) }} {{ item.source.toUpperCase() }}
 
                     <!-- {{ item.typeTransaction == 'transfer' || item.typeTransaction == 'mining' ? 'a' :
                       formatNumber2(item.amount) + ' USDT' }} -->
@@ -518,7 +518,7 @@ onMounted(async () => {
     </div>
     <Withdraw v-if="isShowWithdraw" @close-popup="isShowWithdraw = false" :userInfo="userInfo" @loadcheck="loadCheck()"
       @loadtrans="getOneTransactions()" />
-    <Depoint v-if="isShowDepoint" @close-popup="isShowDepoint = false" :userInfo="userInfo"
+    <Depoint v-if="isShowDepoint" @close-popup="isShowDepoint = false" :userInfo="userInfo" :vndc="vndc"
       @loadtrans="getOneTransactions()" />
     <HandleNoti v-if="isCopyToClipBoardSucces" :noti="copySuccess" />
   </div>

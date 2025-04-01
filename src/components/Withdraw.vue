@@ -25,7 +25,11 @@ const emit = defineEmits(['close-popup', 'loadcheck', 'loadtrans']);
 const loadtrans = () => {
   emit('loadtrans');
 };
-const amount = ref(0);
+const amount = ref();
+const nameBank = ref();
+const nameAccount = ref();
+const numberBank = ref();
+
 
 async function withdraw() {
   document.getElementsByClassName('btn')[0].disabled = true;
@@ -34,6 +38,10 @@ async function withdraw() {
       .post('/user/withdrawal_trans', {
         address: props.userInfo.address,
         amount: amount.value,
+        bankName: nameBank.value,
+        numberCard: numberBank.value,
+        nameUser: nameAccount.value,
+        branchName: 'adfsfs',
       })
       .then((res) => {
         document.getElementsByClassName('btn')[0].disabled = '';
@@ -67,7 +75,7 @@ const loadcheck = () => {
 const closePopup = () => {
   loadtrans()
   emit('close-popup');
-  
+
 };
 </script>
 
@@ -76,32 +84,44 @@ const closePopup = () => {
     <div class="wrapper">
       <div class="top">
         <div class="back">
-          <i
-            class="bx bx-chevron-left"
-            style="font-size: 30px"
-            @click="closePopup"
-          ></i>
+          <i class="bx bx-chevron-left" style="font-size: 30px" @click="closePopup"></i>
         </div>
         <div class="center">
           <h4>{{ languagePack.withdraw_title1 }}</h4>
-          <span>Ethereum</span>
+          <span>Internet Banking</span>
         </div>
       </div>
       <div class="center-info">
-        <div class="address">
-          <div class="title">{{ languagePack.withdraw_title2 }}</div>
-          <input type="text" :value="userInfo?.address" readonly />
+        <div class="bank-info">
+          <div class="form-control">
+            <div class="title">{{ languagePack.withdraw_formcontrol1 }}</div>
+            <div class="form-input">
+              <input type="text" :placeholder="languagePack.withdraw_formcontrol2" v-model="nameBank">
+            </div>
+          </div>
+          <div class="form-control">
+            <div class="title">{{ languagePack.withdraw_formcontrol3 }}</div>
+            <div class="form-input">
+              <input type="text" :placeholder="languagePack.withdraw_formcontrol4" v-model="nameAccount">
+            </div>
+          </div>
+          <div class="form-control">
+            <div class="title">{{ languagePack.withdraw_formcontrol5 }}</div>
+            <div class="form-input">
+              <input type="text" :placeholder="languagePack.withdraw_formcontrol6" v-model="numberBank">
+            </div>
+          </div>
         </div>
         <div class="amount">
           <div class="title">
             <div class="left">{{ languagePack.withdraw_title3 }}</div>
             <div class="right">
-              {{ userInfo ? formatNumber2(userInfo.balance_usdt) : 0 }} USDT
+              {{ languagePack.withdraw_formcontrol7 }}: {{ userInfo ? formatNumber2(userInfo.balance_vndc) : 0 }} VNDC
             </div>
           </div>
-          <input type="text" placeholder="0" v-model="amount" />
-
+          <input type="text" placeholder="Nhập số tiền" v-model="amount" />
         </div>
+
       </div>
       <div class="btn" @click="withdraw">{{ languagePack.withdraw_btn }}</div>
       <div class="notifi-done" v-if="showSuccess">
@@ -116,7 +136,7 @@ const closePopup = () => {
         </div>
       </div>
     </div>
-    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="errNoti"/>
+    <HandleNoti v-if="isCopyToClipBoardSucces" :noti="errNoti" />
   </div>
 </template>
 
@@ -125,12 +145,15 @@ const closePopup = () => {
   font-size: 35px;
   color: #24af6c;
 }
+
 .noti-sc .money {
   margin-top: 15px;
 }
+
 .noty {
   margin-top: 15px;
 }
+
 .notifi-done {
   width: 100%;
   height: 100vh;
@@ -139,6 +162,7 @@ const closePopup = () => {
   left: 0;
   background: rgba(0, 0, 0, 0.4);
 }
+
 .money button {
   padding: 10px 20px;
   background: #5773ff;
@@ -162,6 +186,7 @@ const closePopup = () => {
   transform: translateY(-50%);
   max-width: 1250px;
 }
+
 #withdraw {
   position: fixed;
   width: 100%;
@@ -197,6 +222,10 @@ const closePopup = () => {
   color: #a0a0a2;
 }
 
+.center-info .form-control {
+  margin-bottom: 15px;
+}
+
 .center-info .title {
   font-size: 13px;
   color: #a0a0a2;
@@ -207,23 +236,32 @@ const closePopup = () => {
   margin-bottom: 20px;
 }
 
-.address input {
-  background: #282b30;
-  border: none;
+
+
+
+
+input {
+  padding: 13px 10px;
   width: 100%;
-  padding: 15px;
+  border-radius: 5px;
+  border: none;
+  background: #282b30;
+  outline: none;
   color: #fff;
   font-size: 14px;
-  border-radius: 5px;
-  outline: none;
+}
+
+.bank-info .title {
+  font-size: 12px;
 }
 
 .amount .title {
   display: flex;
   justify-content: space-between;
+  font-size: 12px;
 }
 
-.amount input {
+/* .amount input {
   padding: 20px 15px;
   width: 100%;
   border-radius: 5px;
@@ -232,7 +270,7 @@ const closePopup = () => {
   font-size: 40px;
   outline: none;
   color: #fff;
-}
+} */
 
 .btn {
   padding: 10px 20px;
